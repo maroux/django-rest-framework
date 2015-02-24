@@ -156,6 +156,7 @@ class Field(object):
     default_validators = []
     default_empty_html = empty
     initial = None
+    type_label = 'field'
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
@@ -488,6 +489,7 @@ class BooleanField(Field):
     }
     default_empty_html = False
     initial = False
+    type_label = 'boolean'
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
     FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
 
@@ -515,6 +517,7 @@ class NullBooleanField(Field):
         'invalid': _('`{input}` is not a valid boolean.')
     }
     initial = None
+    type_label = 'boolean'
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
     FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
     NULL_VALUES = set(('n', 'N', 'null', 'Null', 'NULL', '', None))
@@ -552,6 +555,7 @@ class CharField(Field):
         'min_length': _('Ensure this field has at least {min_length} characters.')
     }
     initial = ''
+    type_label = 'string'
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
@@ -586,6 +590,7 @@ class EmailField(CharField):
     default_error_messages = {
         'invalid': _('Enter a valid email address.')
     }
+    type_label = 'email'
 
     def __init__(self, **kwargs):
         super(EmailField, self).__init__(**kwargs)
@@ -603,6 +608,7 @@ class RegexField(CharField):
     default_error_messages = {
         'invalid': _('This value does not match the required pattern.')
     }
+    type_label = 'regex'
 
     def __init__(self, regex, **kwargs):
         super(RegexField, self).__init__(**kwargs)
@@ -614,6 +620,7 @@ class SlugField(CharField):
     default_error_messages = {
         'invalid': _("Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens.")
     }
+    type_label = 'slug'
 
     def __init__(self, **kwargs):
         super(SlugField, self).__init__(**kwargs)
@@ -626,6 +633,7 @@ class URLField(CharField):
     default_error_messages = {
         'invalid': _("Enter a valid URL.")
     }
+    type_label = 'url'
 
     def __init__(self, **kwargs):
         super(URLField, self).__init__(**kwargs)
@@ -659,6 +667,7 @@ class IntegerField(Field):
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_string_length': _('String value too large')
     }
+    type_label = 'integer'
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, **kwargs):
@@ -693,6 +702,7 @@ class FloatField(Field):
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_string_length': _('String value too large')
     }
+    type_label = 'float'
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, **kwargs):
@@ -729,6 +739,7 @@ class DecimalField(Field):
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
         'max_string_length': _('String value too large')
     }
+    type_label = 'decimal'
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     coerce_to_string = api_settings.COERCE_DECIMAL_TO_STRING
@@ -813,6 +824,7 @@ class DateTimeField(Field):
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
         'date': _('Expected a datetime but got a date.'),
     }
+    type_label = 'datetime'
     format = api_settings.DATETIME_FORMAT
     input_formats = api_settings.DATETIME_INPUT_FORMATS
     default_timezone = timezone.get_default_timezone() if settings.USE_TZ else None
@@ -878,6 +890,7 @@ class DateField(Field):
         'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
         'datetime': _('Expected a date but got a datetime.'),
     }
+    type_label = 'date'
     format = api_settings.DATE_FORMAT
     input_formats = api_settings.DATE_INPUT_FORMATS
 
@@ -935,6 +948,7 @@ class TimeField(Field):
     default_error_messages = {
         'invalid': _('Time has wrong format. Use one of these formats instead: {format}'),
     }
+    type_label = 'time'
     format = api_settings.TIME_FORMAT
     input_formats = api_settings.TIME_INPUT_FORMATS
 
@@ -991,6 +1005,7 @@ class ChoiceField(Field):
     default_error_messages = {
         'invalid_choice': _('`{input}` is not a valid choice.')
     }
+    type_label = 'choice'
 
     def __init__(self, choices, **kwargs):
         # Allow either single or paired choices style:
@@ -1036,6 +1051,7 @@ class MultipleChoiceField(ChoiceField):
         'invalid_choice': _('`{input}` is not a valid choice.'),
         'not_a_list': _('Expected a list of items but got type `{input_type}`.')
     }
+    type_label = 'multiple choice'
     default_empty_html = []
 
     def get_value(self, dictionary):
@@ -1070,7 +1086,9 @@ class FileField(Field):
         'empty': _("The submitted file is empty."),
         'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
     }
+    type_label = 'file'
     use_url = api_settings.UPLOADED_FILES_USE_URL
+    type_label = 'file'
 
     def __init__(self, *args, **kwargs):
         self.max_length = kwargs.pop('max_length', None)
@@ -1114,6 +1132,7 @@ class ImageField(FileField):
             'image or a corrupted image.'
         ),
     }
+    type_label = 'image'
 
     def __init__(self, *args, **kwargs):
         self._DjangoImageField = kwargs.pop('_DjangoImageField', DjangoImageField)
@@ -1151,6 +1170,7 @@ class ListField(Field):
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type `{input_type}`')
     }
+    type_label = 'array'
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
